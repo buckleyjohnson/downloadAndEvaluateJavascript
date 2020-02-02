@@ -14,10 +14,8 @@ var downloadedOK = false;
 let webViewController = WebViewController()
 class ViewController: UIViewController {
     @IBAction func tappedRedoButton(_ sender: UIButton) {
-        webViewController.evaluateJS()
-        
-        
-    }
+        webViewController.evaluateJS()  
+            }
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,7 +35,7 @@ class ViewController: UIViewController {
 
     }
     
-    @objc func downloadedFile(_ notification: NSNotification) {
+    @objc func downloadedFile(_ notification: NSNotification) {                                         //notification of file downloading ok or not
         if let dict = notification.userInfo as NSDictionary? {
             if let fileDownloaded = dict["fileToDownload"] as? String{
                 if (fileDownloaded != K.downloadFile){
@@ -69,7 +67,6 @@ class ViewController: UIViewController {
         webViewControllerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         webViewControllerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         webViewControllerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-       // webViewControllerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.75).isActive = true
         webViewController.didMove(toParent: self)
         self.view.sendSubviewToBack(webViewControllerView)
     }
@@ -86,19 +83,18 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
 
         self.webView = {
             
-
             contentController.add(self, name: K.messageName)
 
             let configuration = WKWebViewConfiguration()
             configuration.userContentController = contentController
             var scriptSource = ""
-            if (downloadedOK){
+            if (downloadedOK){                                                                                                      //get the freshly downloaded JS
              scriptSource = getMyJavaScript()
             }
             else {
-                 scriptSource = getMyJavaScriptFromMain()
+                 scriptSource = getMyJavaScriptFromMain()                                                                           //else get the Javascript that came with the Main Bundle
             }
-            let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+            let userScript = WKUserScript(source: scriptSource, injectionTime: .atDocumentEnd, forMainFrameOnly: true)                  //inject the Javascript
                        contentController.addUserScript(userScript)
 
             let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -111,7 +107,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
 
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    override func viewDidLoad() {
+    override func viewDidLoad() {                                                                   //add and position the webview
         super.viewDidLoad()
 
         view.addSubview(webView)
@@ -128,8 +124,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
         super.viewWillAppear(animated)
 
         if !webViewContentIsLoaded {
-            //let url = URL(string: "https://stackoverflow.com")!
-            if let url = Bundle.main.url(forResource: K.htmlFile, withExtension: K.htmlFileTypeString) {
+            if let url = Bundle.main.url(forResource: K.htmlFile, withExtension: K.htmlFileTypeString) {                // get the blank html file from the main bundle
                            let request = URLRequest(url: url)
 
                            webView.load(request)
@@ -148,8 +143,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
     }
     // MARK: - WKScriptMessageHandler
 
-    func evaluateJS(){
-      viewsDict.removeAll()
+    func evaluateJS(){                                                                                                          //startOperation 10 times
+      viewsDict.removeAll()                         //reset to be able to press button and redo
         for _ in 1...K.numberOfOperations {
                   let newRandomString = randomString(length: 2)
                   webView.evaluateJavaScript("startOperation('\(newRandomString)')", completionHandler: { (object, error) in
@@ -157,7 +152,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
                   })
               }
     }
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {  //listen for the jumbo message
        
         guard let bodyString = message.body as? String else {
             print("could not convert message body to dictionary: \(message.body)")
@@ -207,12 +202,12 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
     
     
 
-    let xValues = [020,150,300,020,150,300,020,150,300,020,150,300,020,150,300,020,150,300,020,150,300]
+    let xValues = [020,150,300,020,150,300,020,150,300,020,150,300,020,150,300,020,150,300,020,150,300] //indicator views are positioned using the x,y index values corresponding to count of viewsDict
     let yValues = [100,100,100,200,200,200,300,300,300,400,400,400,500,500,500,600,600,600,700,700,700]
 
     extension UIViewController {
         
-        func showIndicator(withTitle title: String, and Description:String) {
+        func showIndicator(withTitle title: String, and Description:String) {           //displays a UIView with progress indicator and title label, views are held in viewsDict for later use
         let xCoordinate = CGFloat(xValues[viewsDict.count])
         let yCoordinate = CGFloat(yValues[viewsDict.count])
         let frame = CGRect(x: xCoordinate, y:yCoordinate, width: 100, height: 50)
@@ -246,8 +241,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKScriptMessage
         }
          
         
-        func endProgress(id: String, state: String){
-             
+        func endProgress(id: String, state: String){//called when message is completed, state will be error or success
             let indicator = viewsDict[id]
             let thisView = indicator?.superview as? UIView
             if (state == "error"){

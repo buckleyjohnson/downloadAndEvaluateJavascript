@@ -15,10 +15,6 @@ func randomString(length: Int) -> String {
 }
 
 
-
-
-
-
 func convertToDictionary(text: String) -> [String: Any]? {
     if let data = text.data(using: .utf8) {
         do {
@@ -30,27 +26,7 @@ func convertToDictionary(text: String) -> [String: Any]? {
     return nil
 }
 
-/*
- NSString *documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES)[0];
- NSString *filePath = [NSString stringWithFormat:@"file://%@/image.png", documentsDirectory];
- */
 
-
-
-//func getMyJavaScript() -> String {      //gets js file from documents directory
-//
-//    let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//     let filepath = documentsURL.appendingPathComponent(K.fileName)
-//
-//
-////if let filepath = Bundle.main.path(forResource: K.javascriptFile, ofType: K.javascriptFileTypeString) {
-//        do {
-//            return try String(contentsOfFile: filepath)
-//        } catch {print("error")
-//            return ""
-//        }
-//
-//}
 
 func getMyJavaScriptFromMain() -> String {      //gets js file from documents directory
     
@@ -80,7 +56,7 @@ if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMa
 func downloadFile(fileToDownload: String, locationToCopyToPath: URL) {
     
     let url = NSURL(string: fileToDownload)
-    let urlToCopyTo = locationToCopyToPath        // NOTE:  initializer for local file path
+    let urlToCopyTo = locationToCopyToPath
     if let unwrappedURL = url {
         
         let downloadTask = URLSession.shared.downloadTask(with: unwrappedURL as URL) { (urlToCompletedFile, reponse, error) -> Void in
